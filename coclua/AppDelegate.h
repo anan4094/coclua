@@ -1,15 +1,18 @@
-//
-//  AppDelegate.h
-//  coclua
-//
-//  Created by anan on 12/13/13.
-//  Copyright (c) 2013 anan. All rights reserved.
-//
+#ifndef __APP_DELEGATE_H__
+#define __APP_DELEGATE_H__
 
 #import <UIKit/UIKit.h>
+#import "cocos2d.h"
+class AppDelegate : private cocos2d::Application{
+public:
+    AppDelegate();
+    virtual ~AppDelegate();
+    
+    virtual bool applicationDidFinishLaunching();
+    
+    virtual void applicationDidEnterBackground();
+    
+    virtual void applicationWillEnterForeground();
+};
 
-@interface AppDelegate : UIResponder <UIApplicationDelegate>
-
-@property (strong, nonatomic) UIWindow *window;
-
-@end
+#endif  // __APP_DELEGATE_H__
