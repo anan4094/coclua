@@ -33,9 +33,9 @@ public:
     static int dispatcher(lua_State*l);
     
     void init();
-    
     void sendRequestWithParam(const char* type, Dictionary* param);
     void sendRequestWithParam(const char* type, Dictionary* param,int userData);
+    void sendMessage(const char*msg);
     void dispatchRequestDidFinish(const char* type, int resultRef);
     void dispatchRequestDidFail(const char*type,const char*message);
     void socketInitAndConnectServer();

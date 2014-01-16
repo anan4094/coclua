@@ -26,8 +26,7 @@ enum SocketState{
 	ESOCKET_RECEIVEDATA, //接收数据
 	ESOCKET_DISCONNECTFROMCLIENT, //客户端主动断开连接
 	ESOCKET_DISCONNECTFROMSERVER, //服务端主动断开连接
-    
-    ESOCKET_RECEIVE_ERROR
+    ESOCKET_RECEIVE_ERROR, //接收数据错误
     
 };
 
@@ -46,14 +45,18 @@ private:
     bool m_bSchedulerBegin;
     list<char*> m_objectList;
     char *m_pRecvBuf;
+    char *m_pSendBuf;
     int m_nSendBufLength;
     int m_nRecvBufLength;
     int m_bufSize;
 public:
     SocketUtil(std::string ip, unsigned short port, RequestManager* manager);
+    ~SocketUtil();
     int initAndConnect();
     void threadStartConnect();
     int recvData();
+    void sendMessage(const char* message);
+    void closeAndDeleteSocket();
     
     void executeRender(float dt);
     void addData(const char* msg);

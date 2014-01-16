@@ -9,6 +9,7 @@
 #include "RequestManager.h"
 #include "JsonUtil.h"
 #include "luaUtil.h"
+#include "baseUtil.h"
 #include "CCLuaEngine.h"
 #include <stdio.h>
 USING_NS_CC;
@@ -33,11 +34,26 @@ static int lua_sendRequest(lua_State*l){
         //has user data
         lua_pushvalue(l, -1);
         int r = luaL_ref(l, LUA_REGISTRYINDEX);//OK REF
+        int num = lua_gettop(l);
         Dictionary*tmp= dynamic_cast<Dictionary*>(lua2object(l, -2));
         RequestManager::sharedRequestManager()->sendRequestWithParam(lua_tostring(l, -3), tmp,r);
     }else if(param_num==3){
         Dictionary*tmp= dynamic_cast<Dictionary*>(lua2object(l, -1));
         RequestManager::sharedRequestManager()->sendRequestWithParam(lua_tostring(l, -2), tmp);
+    }else{
+        //the number of parameter is not expect
+    }
+    return 0;
+}
+static int lua_sendMessage(lua_State*l){
+    int param_num= lua_gettop(l);
+    if (param_num>=2) {
+        Object*tmp = lua2object(l, 2);
+        Json::Value jsonValue = JsonUtil::jsonValueWithObject(tmp);
+        Json::FastWriter writer;
+        std::string jsonString = writer.write(jsonValue);
+        std::string jsonStringEncode = UrlEncode(jsonString);
+        RequestManager::sharedRequestManager()->sendMessage(jsonStringEncode.c_str());
     }else{
         //the number of parameter is not expect
     }
@@ -69,6 +85,7 @@ static int  lua_dispatchRequestDidFinish(lua_State*l){
     delegates        = [lua_delegates]                    int:()
     requestDidFinish = [lua_dispatchRequestDidFinish]     void:(string,table)
     sendRequest      = [lua_sendRequest]                  void:(string,table[,any])
+    sendMessage      = [lua_sendMessage]                  void:([string|table|...])
  }
  */
 int lua_auto_requestmanager(lua_State*l){
@@ -78,6 +95,7 @@ int lua_auto_requestmanager(lua_State*l){
         {"delegates", lua_delegates},
         {"requestDidFinish",lua_dispatchRequestDidFinish},
         {"sendRequest",lua_sendRequest},
+        {"sendMessage",lua_sendMessage},
         {NULL, NULL}  /* sentinel */
     };
     int i=0;
@@ -120,7 +138,6 @@ int RequestManager::dispatcher(lua_State *l){
 }
 
 void RequestManager::init(){
-    printf("length:%ld\n",sizeof(int));
     socketInitAndConnectServer();
 }
 int RequestManager::delegate(){
@@ -147,19 +164,21 @@ void RequestManager::sendRequestWithParam(const char*type, Dictionary* param){
 
 void RequestManager::sendRequestWithParam(const char* type, Dictionary* param,int userData){
     lua_State *L = LuaEngine::getInstance()->getLuaStack()->getLuaState();
-    lua_getglobal(L, "RequestManager");
     CHECK_STACK(L,a)
+    lua_getglobal(L, "RequestManager");
     if (!lua_istable(L, -1)) {
         lua_pop(L, 1);
     }else{
         lua_pushstring(L, "obtainHttpUrl");
         lua_gettable(L, -2);
         if (lua_isfunction(L, -1)) {
+            lua_pushvalue(L, -2);
             lua_pushstring(L, type);
             object2lua(L, param);
-            int code = lua_pcall(L, 2, 1, 0);
+            int code = lua_pcall(L, 3, 1, 0);
             if (lua_type(L, -1)==LUA_TSTRING) {
                 if (code) {
+                    log(1, "obtain http url error:%s",lua_tostring(L, -1));
                     lua_pop(L, 2);
                 }else{
                     const char* tmp = lua_tostring(L, -1);
@@ -191,6 +210,11 @@ void RequestManager::sendRequestWithUrl(const char* type, const char* url,int us
     request->setUserData((void*)userData);
     HttpClient::getInstance()->send(request);
     request->release();
+}
+
+void RequestManager::sendMessage(const char *msg){
+    log(1, "send message:%s",msg);
+    m_pSocketUtil->sendMessage(msg);
 }
 
 void RequestManager::httpRequestDidCompleted(Object *sender, network::HttpResponse *data){
@@ -312,8 +336,8 @@ void RequestManager::dispatchRequestDidFail(const char*type,const char*message){
 
 void RequestManager::socketInitAndConnectServer(){
     if(m_pSocketUtil){
-        delete m_pSocketUtil;
-        m_pSocketUtil = NULL;
+        m_pSocketUtil->release();
+        m_pSocketUtil = nullptr;
     }
     char ip[64]={0};
     int port=0;

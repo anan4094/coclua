@@ -13,13 +13,30 @@
 
 USING_NS_CC;
 
-SocketUtil::SocketUtil(std::string ip, unsigned short port, RequestManager* manager):m_pRecvBuf(NULL),m_bufSize(1024),m_nSendBufLength(0),m_nRecvBufLength(0),m_bSchedulerBegin(false){
-    m_pSocketHandle = NULL;
+SocketUtil::SocketUtil(std::string ip, unsigned short port, RequestManager* manager):m_pRecvBuf(nullptr),m_pSendBuf(nullptr),m_bufSize(1024),m_nSendBufLength(0),m_nRecvBufLength(0),m_bSchedulerBegin(false){
+    m_pSocketHandle = nullptr;
 	m_pServerIp = ip;
 	m_serverPort = port;
 	m_bIsConnect = false;
 	m_pManager = manager;
 	m_socketState = ESOCKET_NOP;
+}
+
+SocketUtil::~SocketUtil(){
+    if (m_bSchedulerBegin) {
+        Scheduler* pScheduler = CCDirector::getInstance()->getScheduler();
+        pScheduler->unscheduleSelector(schedule_selector(SocketUtil::executeRender), this);
+        m_bSchedulerBegin = false;
+    }
+    if (m_pSendBuf) {
+        delete m_pSendBuf;
+        m_pSendBuf = nullptr;
+    }
+    if (m_pRecvBuf) {
+        delete m_pRecvBuf;
+        m_pRecvBuf = nullptr;
+    }
+    closeAndDeleteSocket();
 }
 
 int SocketUtil::initAndConnect(){
@@ -171,6 +188,58 @@ int SocketUtil::recvData()
 		}
 	}
 	return 0;
+}
+void SocketUtil::sendMessage(const char* message)
+{
+//	printf("socket will send-->%s", message);
+	if (!m_bIsConnect)
+	{
+//		printf("socket diconnet!!!!!!");
+		return;
+	}
+	//添加长度
+	size_t length = strlen(message);
+	if (length + sizeof(int) > m_nSendBufLength)
+	{
+		if(m_pSendBuf)
+		{
+			delete[] m_pSendBuf;
+			m_pSendBuf = NULL;
+		}
+        
+		m_pSendBuf = new char[length+sizeof(int)];
+        if (!m_pSendBuf) {
+            printf("socket is err:%s===================", message);
+            return;
+        }
+		m_nSendBufLength = length+sizeof(int);
+	}
+    
+	*((lint*)m_pSendBuf) = htonl(length);
+    
+	memcpy(m_pSendBuf+sizeof(lint), message, length);
+    
+    bool bSend = m_pSocketHandle->send(m_pSendBuf, length + sizeof(lint));
+        
+    if (!bSend){
+//        printf("send message \"%s\" fail", message);
+    }
+}
+
+void SocketUtil::closeAndDeleteSocket()
+{
+	m_bIsConnect = false;
+	// 加锁   避免在多线程中同时处理
+	pthread_mutex_lock(&m_mutexForHandle);
+	if (m_pSocketHandle)
+	{
+		m_pSocketHandle->destroy();
+	}
+	// 释放互斥锁
+	pthread_mutex_unlock(&m_mutexForHandle);
+    
+	delete m_pSocketHandle;
+    m_pSocketHandle = nullptr;
 }
 
 void SocketUtil::executeRender(float dt){

@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>IDESourceControlProjectFavoriteDictionaryKey</key>
+	<false/>
+	<key>IDESourceControlProjectIdentifier</key>
+	<string>8F04E965-47BB-474E-A4D6-39C487D364AE</string>
+	<key>IDESourceControlProjectName</key>
+	<string>coclua</string>
+	<key>IDESourceControlProjectOriginsDictionary</key>
+	<dict>
+		<key>B54C7C0F-B226-42CA-95FE-5E9D4292CE91</key>
+		<string>https://github.com/anan4094/coclua.git</string>
+	</dict>
+	<key>IDESourceControlProjectPath</key>
+	<string>coclua.xcodeproj/project.xcworkspace</string>
+	<key>IDESourceControlProjectRelativeInstallPathDictionary</key>
+	<dict>
+		<key>B54C7C0F-B226-42CA-95FE-5E9D4292CE91</key>
+		<string>../..</string>
+	</dict>
+	<key>IDESourceControlProjectURL</key>
+	<string>https://github.com/anan4094/coclua.git</string>
+	<key>IDESourceControlProjectVersion</key>
+	<integer>110</integer>
+	<key>IDESourceControlProjectWCCIdentifier</key>
+	<string>B54C7C0F-B226-42CA-95FE-5E9D4292CE91</string>
+	<key>IDESourceControlProjectWCConfigurations</key>
+	<array>
+		<dict>
+			<key>IDESourceControlRepositoryExtensionIdentifierKey</key>
+			<string>public.vcs.git</string>
+			<key>IDESourceControlWCCIdentifierKey</key>
+			<string>B54C7C0F-B226-42CA-95FE-5E9D4292CE91</string>
+			<key>IDESourceControlWCCName</key>
+			<string>coclua</string>
+		</dict>
+	</array>
+</dict>
+</plist>

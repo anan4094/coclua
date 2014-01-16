@@ -101,7 +101,7 @@ Object* lua2object(lua_State*L,int idx){
 }
 int finishRequestForLua(lua_State*L,const char* type,Object*obj,int userData){
     if (obj==nullptr) {
-        echo("luaUtil","http request object is null\n");
+        echo("luaUtil","http request object is null");
         return -1;
     }
     do{
@@ -112,14 +112,14 @@ int finishRequestForLua(lua_State*L,const char* type,Object*obj,int userData){
         sprintf(funname, "finished%sRequest", type);
         lua_getglobal(L, "RequestManager");
         if (!lua_istable(L, -1)) {
-            echo("luaUtil","request mananer object don't exist\n");
+            echo("luaUtil","request mananer object don't exist");
             lua_pop(L, 1);
             break;
         }
         lua_pushstring(L, funname);
         lua_gettable(L,-2);
         if (lua_isfunction(L, -1)) {
-            echo("luaUtil","execute %s method for http request\n",funname);
+            echo("luaUtil","execute %s method for http request",funname);
             lua_insert(L, -2);
             lua_pushstring(L, type);
             object2lua(L,obj);
@@ -129,11 +129,11 @@ int finishRequestForLua(lua_State*L,const char* type,Object*obj,int userData){
                 param_num++;
             }
             if(lua_pcall(L, param_num, 0, 0)){
-                echo("luaUtil","http request lua analytic method run error:%s\n",lua_tostring(L, -1));
+                echo("luaUtil","http request lua analytic method run error:%s",lua_tostring(L, -1));
             }
             return 0;
         }else{
-            echo("luaUtil","execute default method for http request on %s\n",type);
+            echo("luaUtil","execute default method for http request on %s",type);
             lua_pop(L, 2);
             break;
         }
@@ -143,7 +143,7 @@ int finishRequestForLua(lua_State*L,const char* type,Object*obj,int userData){
 }
 int receiveSocketForLua(lua_State*L,Object*obj){
     if (obj==nullptr) {
-        echo("luaUtil","socket message object is null\n");
+        echo("luaUtil","socket message object is null");
         return -1;
     }
     CHECK_STACK(L, aaa)
@@ -153,7 +153,7 @@ int receiveSocketForLua(lua_State*L,Object*obj){
         }
         lua_getglobal(L, "RequestManager");
         if (!lua_istable(L, -1)) {
-            echo("luaUtil","request mananer object don't exist\n");
+            echo("luaUtil","request mananer object don't exist");
             lua_pop(L, 1);
             break;
         }
@@ -163,12 +163,12 @@ int receiveSocketForLua(lua_State*L,Object*obj){
             lua_insert(L, -2);
             object2lua(L,obj);
             if(lua_pcall(L, 2, 0, 0)){
-                echo("luaUtil","socket message lua analytic method run error:%s\n",lua_tostring(L, -1));
+                echo("luaUtil","socket message lua analytic method run error:%s",lua_tostring(L, -1));
             }
             CHECK_STACK_END(L, aaa, "receiveSocketForLua1")
             return 0;
         }else{
-            echo("luaUtil","execute default method for receive socket message\n");
+            echo("luaUtil","execute default method for receive socket message");
             lua_pop(L, 2);
             break;
         }
@@ -199,7 +199,7 @@ void addElement(lua_State*l,int*ref){
     lua_rawgeti(l, LUA_REGISTRYINDEX, *ref);
     lua_pushvalue(l, -2);
     int r = luaL_ref(l, -2);
-    printf("add element into table%d by index %d\n",*ref,r);
+//    printf("add element into table%d by index %d\n",*ref,r);
     lua_pushstring(l, "___ref___");
     lua_pushnumber(l, r);
     lua_rawset(l, -4);
