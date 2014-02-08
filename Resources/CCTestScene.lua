@@ -15,9 +15,9 @@ function scene:exit()
 end
 function scene:requestDidFinishWithResult(type,result)
     if type == 'Test' then
-        print('CCTestScene收到Test请求的回复：' .. aux:table(result));
+        self:log('CCTestScene收到Test请求的回复:%+@',result);
     elseif type == 'msg' then
-        print('CCTestScene收到服务器信息'..aux:table(result));
+        RequestManager:log('CCTestScene收到服务器信息:%+@',result);
         RequestManager:sendMessage({data='hello server,I am CCTestScene'});
     end
 end

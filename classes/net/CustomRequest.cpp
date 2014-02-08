@@ -6,12 +6,12 @@
 //  Copyright (c) 2014 anan. All rights reserved.
 //
 
-#include "NetworkHook.h"
+#include "CustomRequest.h"
 #include "JsonUtil.h"
 #include "baseUtil.h"
 USING_NS_CC;
 
-void NetworkHook::obtainHttpUrl(const char *type, Dictionary *param, char *url){
+void CustomRequest::obtainHttpUrl(const char *type, Dictionary *param, char *url){
     param->setObject(Integer::create(1),"s");
     Json::Value jsonValue = JsonUtil::jsonValueWithDictionary(param);
     Json::FastWriter writer;
@@ -19,17 +19,17 @@ void NetworkHook::obtainHttpUrl(const char *type, Dictionary *param, char *url){
     std::string jsonStringEncode = UrlEncode(jsonString);
     sprintf(url, "%s","http://m.weather.com.cn/data/101010100.html");
 }
-void NetworkHook::obtainServerAddress(char *ip, int *port){
+void CustomRequest::obtainServerAddress(char *ip, int *port){
     strcpy(ip, "127.0.0.1");
     *port = 11333;
 }
 //return true will crash http infomation transfer to lua
-bool NetworkHook::hookHttpRequest(const char *type,Object *result){
+bool CustomRequest::hookHttpRequest(const char *type,Object *result){
     return false;
 }
 
 //msg is NULL means that there is no warn message when function executed
-void NetworkHook::hookHttpWarnRequest(const char *type,Object*result,const char *msg){
+void CustomRequest::hookHttpWarnRequest(const char *type,Object*result,const char *msg){
     Dictionary*dic = dynamic_cast<Dictionary*>(result);
     if (dic) {
         Integer*err = dynamic_cast<Integer*>(dic->objectForKey("err"));
@@ -42,18 +42,18 @@ void NetworkHook::hookHttpWarnRequest(const char *type,Object*result,const char 
 }
 
 //return true will crash socket infomation transfer to lua
-bool NetworkHook::hookSocketMessage(Object *result){
+bool CustomRequest::hookSocketMessage(Object *result){
     return false;
 }
 
-void NetworkHook::socketConnectFinish(){
+void CustomRequest::socketConnectFinish(){
 }
 
-void NetworkHook::socketReconnectFail(){
+void CustomRequest::socketReconnectFail(){
 }
 
-void NetworkHook::socketDisconnect(){
+void CustomRequest::socketDisconnect(){
 }
 
-void NetworkHook::socketReceiveError(){
+void CustomRequest::socketReceiveError(){
 }

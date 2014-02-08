@@ -5,6 +5,7 @@
 #include "SimpleAudioEngine.h"
 #include "JsonUtil.h"
 #include "RequestManager.h"
+#include "baseUtil.h"
 
 using namespace CocosDenshion;
 
@@ -34,11 +35,9 @@ bool AppDelegate::applicationDidFinishLaunching()
     
     // register lua engine
     auto engine = LuaEngine::getInstance();
-    ScriptEngineManager::getInstance()->setScriptEngine(engine);
-    lua_auto_requestmanager(engine->getLuaStack()->getLuaState());
+    RequestManager::getInstance()->init();
     std::string path = FileUtils::getInstance()->fullPathForFilename("hello.lua");
     engine->executeScriptFile(path.c_str());
-//    RequestManager::sharedRequestManager()->sendRequestWithParam("Test",Dictionary::create());
     return true;
 }
 

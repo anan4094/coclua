@@ -6,16 +6,17 @@
 //  Copyright (c) 2014 anan. All rights reserved.
 //
 
-#ifndef __NetworkHook__
-#define __NetworkHook__
+#ifndef __CustomRequest__
+#define __CustomRequest__
 
 #include "cocos2d.h"
 #include "SocketUtil.h"
+#include "RequestManager.h"
 USING_NS_CC;
 
-class NetworkHook{
+class CustomRequest:public RequestManager{
 public:
-    NetworkHook():m_pSocketUtil(NULL),m_nSocketConnectNum(0){}
+    CustomRequest(){};
 protected:
     int                     m_nSocketConnectNum;
     SocketUtil              *m_pSocketUtil;

@@ -59,6 +59,9 @@ function proto:super(method,...)
 	end
 	print('you need call super method in correct environment');
 end
+function proto:log(formatstr,...)
+    echo(self.__name__,aux:fmt(formatstr,...))
+end
 
 --public function
 function aux:addClass(name,property)
@@ -135,7 +138,7 @@ function aux:table(tabl,tab)
 			break;
 		end
 	end
-	if isarray then
+	if isarray and fl>1 then
 		ret = '[\n';
 		for i=1,fl-1 do
 			local vstr;
@@ -178,6 +181,62 @@ function aux:table(tabl,tab)
 	ret = ret .. self:tab(tab) .. '}';
 	return ret;
 end
+
+function aux:ntable(tabl)
+	local ret = '{';
+	local sp = '';
+	local fl = 1;
+	local isarray = true;
+	for k,v in pairs(tabl) do
+		if type(k)=='number' and fl == k then
+			fl = fl+1;
+		else
+			isarray = false;
+			break;
+		end
+	end
+	if isarray and fl>1 then
+		ret = '[';
+		for i=1,fl-1 do
+			local vstr;
+			local v = tabl[i];
+			if type(v) == 'table' then
+				vstr = self:ntable(v);
+			elseif type(v) == 'string' then
+				vstr = '"' .. self:fstring(v) .. '"';
+			elseif type(v) == 'boolean' then
+				if v then vstr = 'true' else vstr = 'false' end
+			elseif type(v) == 'number' then
+				vstr = ''..v;
+			else
+				vstr = '<' .. type(v) .. '>';
+			end
+			ret = ret .. sp .. vstr;
+			sp = ','
+		end
+		ret = ret .. ']';
+		return ret;
+	end
+	for k,v in pairs(tabl) do
+		local vstr;
+		if type(v) == 'table' then
+			vstr = self:ntable(v);
+		elseif type(v) == 'string' then
+			vstr = '"' .. self:fstring(v) .. '"';
+		elseif type(v) == 'boolean' then
+			if v then vstr = 'true' else vstr = 'false' end
+		elseif type(v) == 'number' then
+			vstr = ''..v;
+		else
+			vstr = '<' .. type(v) .. '>';
+		end
+		ret = ret .. sp .. '"' ..k ..'":'..vstr;
+		sp = ','
+	end
+	ret = ret .. '}';
+	return ret;
+end
+
 -- private function
 -- aux:tab and aux:fstring service for aux:table,so you can ignore them
 function aux:tab(a)
@@ -198,4 +257,60 @@ function aux:fstring(str)
 	s = string.gsub(s,'\n','\\n');
 	s = string.gsub(s,'\r','\\r');
 	return s;
+end
+
+function aux:fmt(formatstr,...)
+    local varg = {...}
+	local str = formatstr;
+	local cnt = 1;
+	local i;
+	local j;
+	local st;
+	local ed;
+	local v;
+	i,j = string.find(str,'%%[+]?@');
+	while i do
+		st = string.sub(str,1,i-1)
+		if not st then
+			st = ''
+		end
+		ed = string.sub(str,j+1);
+		if not ed then
+			ed = ''
+		end
+		if varg[cnt]== nil then
+			v = 'nil'
+		else
+			v = type(varg[cnt]);
+			if v =='string' then
+				v = varg[cnt];
+			elseif v == 'boolean' then
+				if varg then
+					v = 'true'
+				else
+					v = 'false'
+				end
+			elseif v == 'number' then
+				v = varg[cnt];
+			elseif v == 'table' then
+                if (j-i)==2 then
+                    v = aux:table(varg[cnt]);
+                else
+                    v = aux:ntable(varg[cnt]);
+                end
+			else
+				v = '<'..v..'>'
+			end
+		end
+		str = st .. v .. ed;
+		cnt = cnt+1;
+		i,j = string.find(str,'%%[+]?@');
+	end
+    return str;
+end
+
+RequestManager = RequestManager or {}
+
+function RequestManager:log(formatstr,...)
+	self:_log(aux:fmt(formatstr,...))
 end

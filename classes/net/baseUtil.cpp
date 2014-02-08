@@ -48,3 +48,26 @@ std::string UrlEncode(const std::string& szToEncode)
     }
     return dst;
 }
+
+static int lua_echo(lua_State*l){
+    if (lua_gettop(l)==2) {
+        if (lua_type(l, 1)==LUA_TSTRING&&lua_type(l, 2)==LUA_TSTRING) {
+            printf("%s:%s\n",lua_tostring(l, 1),lua_tostring(l, 2));
+        }
+    }
+    return 0;
+}
+
+int lua_auto_util(lua_State*l){
+    static const luaL_Reg reqlib [] = {
+        {"echo", lua_echo},
+        {NULL, NULL}  /* sentinel */
+    };
+    int i=0;
+    while (reqlib[i].name) {
+        lua_pushcfunction(l, reqlib[i].func);
+        lua_setglobal(l, reqlib[i].name);
+        i++;
+    }
+    return 0;
+}

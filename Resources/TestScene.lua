@@ -23,7 +23,7 @@ function scene:requestDidFinishWithResult(type,result)
     if type == 'Test' then
         print('TestScene收到Test请求的回复：' .. aux:table(result));
     elseif type == 'msg' then
-        print('TestScene收到服务器信息'..aux:table(result));
+        RequestManager:log('TestScene收到服务器信息:%@',result);
         RequestManager:sendMessage({data='hello server,I am TestScene'});
     end
 end

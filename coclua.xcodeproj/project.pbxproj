@@ -21,7 +21,7 @@
 		2702F4C6185ABDDA003114F6 /* OpenGLES.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2702F4C5185ABDDA003114F6 /* OpenGLES.framework */; };
 		2709AF3D187E3320005D1569 /* SocketUtil.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2709AF3B187E3320005D1569 /* SocketUtil.cpp */; };
 		270BA422187A7D1D0063F8A1 /* socket.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 270BA420187A7D1D0063F8A1 /* socket.cpp */; };
-		270BA437187A8C290063F8A1 /* NetworkHook.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 270BA435187A8C290063F8A1 /* NetworkHook.cpp */; };
+		270BA437187A8C290063F8A1 /* CustomRequest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 270BA435187A8C290063F8A1 /* CustomRequest.cpp */; };
 		2713CC831881345800FE9B0C /* TestScene.lua in Resources */ = {isa = PBXBuildFile; fileRef = 2713CC821881345800FE9B0C /* TestScene.lua */; };
 		2716B0281872637F00F4333F /* JsonUtil.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2716B0261872637F00F4333F /* JsonUtil.cpp */; };
 		2716B03A1872752700F4333F /* net.lua in Resources */ = {isa = PBXBuildFile; fileRef = 2716B0391872752700F4333F /* net.lua */; };
@@ -58,17 +58,8 @@
 		27FDAF70185E916700CCB1B5 /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 27FDAF6F185E916700CCB1B5 /* AudioToolbox.framework */; };
 		27FDAF72185E916F00CCB1B5 /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 27FDAF71185E916F00CCB1B5 /* AVFoundation.framework */; };
 		27FDAF74185E93E900CCB1B5 /* libcurl.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 27FDAF73185E93E900CCB1B5 /* libcurl.a */; };
-		27FDB00D185EA0B100CCB1B5 /* background.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 27FDB000185EA0B100CCB1B5 /* background.mp3 */; };
-		27FDB00E185EA0B100CCB1B5 /* background.ogg in Resources */ = {isa = PBXBuildFile; fileRef = 27FDB001185EA0B100CCB1B5 /* background.ogg */; };
-		27FDB00F185EA0B100CCB1B5 /* crop.png in Resources */ = {isa = PBXBuildFile; fileRef = 27FDB002185EA0B100CCB1B5 /* crop.png */; };
-		27FDB010185EA0B100CCB1B5 /* dog.png in Resources */ = {isa = PBXBuildFile; fileRef = 27FDB003185EA0B100CCB1B5 /* dog.png */; };
-		27FDB011185EA0B100CCB1B5 /* effect1.wav in Resources */ = {isa = PBXBuildFile; fileRef = 27FDB004185EA0B100CCB1B5 /* effect1.wav */; };
-		27FDB012185EA0B100CCB1B5 /* farm.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 27FDB005185EA0B100CCB1B5 /* farm.jpg */; };
 		27FDB013185EA0B100CCB1B5 /* Marker Felt.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 27FDB007185EA0B100CCB1B5 /* Marker Felt.ttf */; };
 		27FDB014185EA0B100CCB1B5 /* hello.lua in Resources */ = {isa = PBXBuildFile; fileRef = 27FDB008185EA0B100CCB1B5 /* hello.lua */; };
-		27FDB016185EA0B100CCB1B5 /* land.png in Resources */ = {isa = PBXBuildFile; fileRef = 27FDB00A185EA0B100CCB1B5 /* land.png */; };
-		27FDB017185EA0B100CCB1B5 /* menu1.png in Resources */ = {isa = PBXBuildFile; fileRef = 27FDB00B185EA0B100CCB1B5 /* menu1.png */; };
-		27FDB018185EA0B100CCB1B5 /* menu2.png in Resources */ = {isa = PBXBuildFile; fileRef = 27FDB00C185EA0B100CCB1B5 /* menu2.png */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -195,8 +186,8 @@
 		2709AF3C187E3320005D1569 /* SocketUtil.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SocketUtil.h; sourceTree = "<group>"; };
 		270BA420187A7D1D0063F8A1 /* socket.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = socket.cpp; sourceTree = "<group>"; };
 		270BA421187A7D1D0063F8A1 /* socket.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = socket.h; sourceTree = "<group>"; };
-		270BA435187A8C290063F8A1 /* NetworkHook.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = NetworkHook.cpp; sourceTree = "<group>"; };
-		270BA436187A8C290063F8A1 /* NetworkHook.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NetworkHook.h; sourceTree = "<group>"; };
+		270BA435187A8C290063F8A1 /* CustomRequest.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CustomRequest.cpp; sourceTree = "<group>"; };
+		270BA436187A8C290063F8A1 /* CustomRequest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CustomRequest.h; sourceTree = "<group>"; };
 		2713CC821881345800FE9B0C /* TestScene.lua */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = TestScene.lua; sourceTree = "<group>"; };
 		2716B0261872637F00F4333F /* JsonUtil.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = JsonUtil.cpp; sourceTree = "<group>"; };
 		2716B0271872637F00F4333F /* JsonUtil.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JsonUtil.h; sourceTree = "<group>"; };
@@ -231,17 +222,8 @@
 		27FDAF6F185E916700CCB1B5 /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = System/Library/Frameworks/AudioToolbox.framework; sourceTree = SDKROOT; };
 		27FDAF71185E916F00CCB1B5 /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
 		27FDAF73185E93E900CCB1B5 /* libcurl.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libcurl.a; sourceTree = "<group>"; };
-		27FDB000185EA0B100CCB1B5 /* background.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = background.mp3; sourceTree = "<group>"; };
-		27FDB001185EA0B100CCB1B5 /* background.ogg */ = {isa = PBXFileReference; lastKnownFileType = file; path = background.ogg; sourceTree = "<group>"; };
-		27FDB002185EA0B100CCB1B5 /* crop.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = crop.png; sourceTree = "<group>"; };
-		27FDB003185EA0B100CCB1B5 /* dog.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = dog.png; sourceTree = "<group>"; };
-		27FDB004185EA0B100CCB1B5 /* effect1.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = effect1.wav; sourceTree = "<group>"; };
-		27FDB005185EA0B100CCB1B5 /* farm.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = farm.jpg; sourceTree = "<group>"; };
 		27FDB007185EA0B100CCB1B5 /* Marker Felt.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Marker Felt.ttf"; sourceTree = "<group>"; };
 		27FDB008185EA0B100CCB1B5 /* hello.lua */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = hello.lua; sourceTree = "<group>"; };
-		27FDB00A185EA0B100CCB1B5 /* land.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = land.png; sourceTree = "<group>"; };
-		27FDB00B185EA0B100CCB1B5 /* menu1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = menu1.png; sourceTree = "<group>"; };
-		27FDB00C185EA0B100CCB1B5 /* menu2.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = menu2.png; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -352,8 +334,8 @@
 		270BA434187A8B490063F8A1 /* costom */ = {
 			isa = PBXGroup;
 			children = (
-				270BA436187A8C290063F8A1 /* NetworkHook.h */,
-				270BA435187A8C290063F8A1 /* NetworkHook.cpp */,
+				270BA436187A8C290063F8A1 /* CustomRequest.h */,
+				270BA435187A8C290063F8A1 /* CustomRequest.cpp */,
 			);
 			name = costom;
 			sourceTree = "<group>";
@@ -446,12 +428,6 @@
 		27FDAFEF185EA08B00CCB1B5 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
-				27FDB000185EA0B100CCB1B5 /* background.mp3 */,
-				27FDB001185EA0B100CCB1B5 /* background.ogg */,
-				27FDB002185EA0B100CCB1B5 /* crop.png */,
-				27FDB003185EA0B100CCB1B5 /* dog.png */,
-				27FDB004185EA0B100CCB1B5 /* effect1.wav */,
-				27FDB005185EA0B100CCB1B5 /* farm.jpg */,
 				27FDB006185EA0B100CCB1B5 /* fonts */,
 				2790D9E8187BD65E00E6FC17 /* base.lua */,
 				27FDB008185EA0B100CCB1B5 /* hello.lua */,
@@ -459,9 +435,6 @@
 				2713CC821881345800FE9B0C /* TestScene.lua */,
 				278EB8A21885338800187070 /* CTestScene.lua */,
 				272A2A2018865E4200BDDE97 /* CCTestScene.lua */,
-				27FDB00A185EA0B100CCB1B5 /* land.png */,
-				27FDB00B185EA0B100CCB1B5 /* menu1.png */,
-				27FDB00C185EA0B100CCB1B5 /* menu2.png */,
 			);
 			path = Resources;
 			sourceTree = "<group>";
@@ -632,14 +605,10 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				27FDB010185EA0B100CCB1B5 /* dog.png in Resources */,
-				27FDB016185EA0B100CCB1B5 /* land.png in Resources */,
 				27D02CCC185EDC9300A634BE /* Opengl.lua in Resources */,
 				27D02CCE185EDC9300A634BE /* StudioConstants.lua in Resources */,
-				27FDB018185EA0B100CCB1B5 /* menu2.png in Resources */,
 				2716B03A1872752700F4333F /* net.lua in Resources */,
 				27FDB013185EA0B100CCB1B5 /* Marker Felt.ttf in Resources */,
-				27FDB011185EA0B100CCB1B5 /* effect1.wav in Resources */,
 				27D02CC5185EDC9300A634BE /* DeprecatedClass.lua in Resources */,
 				27FDB014185EA0B100CCB1B5 /* hello.lua in Resources */,
 				2713CC831881345800FE9B0C /* TestScene.lua in Resources */,
@@ -650,20 +619,15 @@
 				27D02CC9185EDC9300A634BE /* json.lua in Resources */,
 				27D02CC4185EDC9300A634BE /* Deprecated.lua in Resources */,
 				27D02CC7185EDC9300A634BE /* DeprecatedOpenglEnum.lua in Resources */,
-				27FDB00F185EA0B100CCB1B5 /* crop.png in Resources */,
-				27FDB00E185EA0B100CCB1B5 /* background.ogg in Resources */,
 				27D02CCA185EDC9300A634BE /* luaj.lua in Resources */,
 				27D02CCD185EDC9300A634BE /* OpenglConstants.lua in Resources */,
-				27FDB012185EA0B100CCB1B5 /* farm.jpg in Resources */,
 				27D02CC2185EDC9300A634BE /* Cocos2d.lua in Resources */,
 				27D02CC6185EDC9300A634BE /* DeprecatedEnum.lua in Resources */,
 				27D02CCB185EDC9300A634BE /* luaoc.lua in Resources */,
 				272A2A2118865E4200BDDE97 /* CCTestScene.lua in Resources */,
-				27FDB00D185EA0B100CCB1B5 /* background.mp3 in Resources */,
 				27D02CC1185EDC9300A634BE /* CCBReaderLoad.lua in Resources */,
 				27D02CC8185EDC9300A634BE /* DrawPrimitives.lua in Resources */,
 				2702EE4B185A9612003114F6 /* Images.xcassets in Resources */,
-				27FDB017185EA0B100CCB1B5 /* menu1.png in Resources */,
 				27D02CC0185EDC9300A634BE /* AudioEngine.lua in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -675,7 +639,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				270BA437187A8C290063F8A1 /* NetworkHook.cpp in Sources */,
+				270BA437187A8C290063F8A1 /* CustomRequest.cpp in Sources */,
 				2792E4A41875352E0002BB2B /* RequestManager.cpp in Sources */,
 				2709AF3D187E3320005D1569 /* SocketUtil.cpp in Sources */,
 				2702F4C2185ABCDA003114F6 /* RootViewController.mm in Sources */,

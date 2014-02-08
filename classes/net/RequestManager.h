@@ -9,7 +9,6 @@
 #ifndef __RequestManager__
 #define __RequestManager__
 #include "cocos2d.h"
-#include "NetworkHook.h"
 #include "SocketUtil.h"
 #include "network/HttpRequest.h"
 #include "network/HttpResponse.h"
@@ -21,21 +20,25 @@ USING_NS_CC;
 #define BLOCK_END() }while(0);
 #define LEAVE() break;
 
-class RequestManager : public Object,NetworkHook{
+class RequestManager : public Object{
     //pointer to index of delegate table in lua register table
 private:
     int                     delegates[1];
     int                     debug_level;
+    int                     m_nSocketConnectNum;
+    SocketUtil              *m_pSocketUtil;
+    lua_State               *m_pl;
 public:
     ~RequestManager();
-    
-    static RequestManager* sharedRequestManager();
+    RequestManager();
+    static RequestManager* getInstance();
     static int dispatcher(lua_State*l);
     
     void init();
     void sendRequestWithParam(const char* type, Dictionary* param);
     void sendRequestWithParam(const char* type, Dictionary* param,int userData);
     void sendMessage(const char*msg);
+    void dispatchRequestDidFinish(const char* type, Dictionary* result);
     void dispatchRequestDidFinish(const char* type, int resultRef);
     void dispatchRequestDidFail(const char*type,const char*message);
     void socketInitAndConnectServer();
@@ -45,12 +48,21 @@ public:
     int  delegate();
     void addDelegate();
     void removeDelegate();
+    void log(int level,const char * pszFormat, ...);
 protected:
     void sendRequestWithUrl(const char* type, const char* url,int userData);
     void httpRequestDidCompleted(Object *sender, network::HttpResponse *data);
-    void log(int level,const char * pszFormat, ...);
-private:
-    RequestManager();
+    
+    virtual void obtainHttpUrl(const char *type,Dictionary* param,char*url)         = 0;
+    virtual void obtainServerAddress(char*ip,int*port)                              = 0;
+    virtual bool hookHttpRequest(const char *type,Object*result)                    = 0;
+    virtual void hookHttpWarnRequest(const char *type,Object*result,const char*msg) = 0;
+    virtual bool hookSocketMessage(Object*result)                                   = 0;
+
+    virtual void socketConnectFinish()                                              = 0;
+    virtual void socketReconnectFail()                                              = 0;
+    virtual void socketDisconnect()                                                 = 0;
+    virtual void socketReceiveError()                                               = 0;
 };
 //init request manager object in lua
 int lua_auto_requestmanager(lua_State*l);

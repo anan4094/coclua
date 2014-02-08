@@ -11,37 +11,41 @@
 #include "luaUtil.h"
 #include "baseUtil.h"
 #include "CCLuaEngine.h"
+#include "CustomRequest.h"
 #include <stdio.h>
 USING_NS_CC;
 using namespace network;
-
 #pragma mark function will register in lua
 static int lua_addDelegate(lua_State*l){
-    RequestManager::sharedRequestManager()->addDelegate();
+    RequestManager::getInstance()->addDelegate();
     return 0;
 }
 static int lua_removeDelegate(lua_State*l){
-    RequestManager::sharedRequestManager()->removeDelegate();
+    RequestManager::getInstance()->removeDelegate();
     return 0;
 }
 static int lua_delegates(lua_State*l){
-    lua_rawgeti(l, LUA_REGISTRYINDEX, RequestManager::sharedRequestManager()->delegate());
+    lua_rawgeti(l, LUA_REGISTRYINDEX, RequestManager::getInstance()->delegate());
     return 1;
 }
 static int lua_sendRequest(lua_State*l){
     int param_num= lua_gettop(l);
+    if (param_num>=2 && lua_type(l, 2)!=LUA_TSTRING) {
+        echo("RequestManager", "<sendRequest>type parameter is not string");
+        return 0;
+    }
     if (param_num==4) {
         //has user data
         lua_pushvalue(l, -1);
         int r = luaL_ref(l, LUA_REGISTRYINDEX);//OK REF
-        int num = lua_gettop(l);
         Dictionary*tmp= dynamic_cast<Dictionary*>(lua2object(l, -2));
-        RequestManager::sharedRequestManager()->sendRequestWithParam(lua_tostring(l, -3), tmp,r);
+        RequestManager::getInstance()->sendRequestWithParam(lua_tostring(l, -3), tmp,r);
     }else if(param_num==3){
         Dictionary*tmp= dynamic_cast<Dictionary*>(lua2object(l, -1));
-        RequestManager::sharedRequestManager()->sendRequestWithParam(lua_tostring(l, -2), tmp);
+        RequestManager::getInstance()->sendRequestWithParam(lua_tostring(l, -2), tmp);
     }else{
         //the number of parameter is not expect
+        echo("RequestManager", "<sendRequest>the number of parameter is not expect");
     }
     return 0;
 }
@@ -53,9 +57,10 @@ static int lua_sendMessage(lua_State*l){
         Json::FastWriter writer;
         std::string jsonString = writer.write(jsonValue);
         std::string jsonStringEncode = UrlEncode(jsonString);
-        RequestManager::sharedRequestManager()->sendMessage(jsonStringEncode.c_str());
+        RequestManager::getInstance()->sendMessage(jsonStringEncode.c_str());
     }else{
         //the number of parameter is not expect
+        echo("RequestManager", "<sendMessage>msg parameter is null");
     }
     return 0;
 }
@@ -63,16 +68,25 @@ static int  lua_dispatchRequestDidFinish(lua_State*l){
     if (lua_gettop(l)!=3) {
         return 0;
     }else{
-        if (!lua_isstring(l, -2)) {
+        if (lua_type(l, -2)!=LUA_TSTRING) {
+            echo("RequestManager", "<dispatchRequestDidFinish>type parameter is not string");
             return 0;
-            if (!(lua_isstring(l, -1)||lua_istable(l, -1))) {
-                return 0;
-            }
+        }
+        if (!(lua_type(l, -1)==LUA_TSTRING||lua_istable(l, -1))) {
+            echo("RequestManager", "<dispatchRequestDidFinish>the type of result parameter is not expect");
+            return 0;
         }
     }
     lua_pushvalue(l, -1);
     int r = luaL_ref(l,LUA_REGISTRYINDEX);//OK REF
-    RequestManager::sharedRequestManager()->dispatchRequestDidFinish(lua_tostring(l, -2), r);
+    RequestManager::getInstance()->dispatchRequestDidFinish(lua_tostring(l, -2), r);
+    return 0;
+}
+static int lua_log(lua_State*l){
+    if (lua_gettop(l)<2||lua_type(l, 2)!=LUA_TSTRING) {
+        return 0;
+    }
+    RequestManager::getInstance()->log(1, "%s",lua_tostring(l, 2));
     return 0;
 }
 
@@ -96,6 +110,7 @@ int lua_auto_requestmanager(lua_State*l){
         {"requestDidFinish",lua_dispatchRequestDidFinish},
         {"sendRequest",lua_sendRequest},
         {"sendMessage",lua_sendMessage},
+        {"_log",lua_log},
         {NULL, NULL}  /* sentinel */
     };
     int i=0;
@@ -115,29 +130,37 @@ int lua_auto_requestmanager(lua_State*l){
     return 0;
 }
 
-RequestManager::RequestManager():debug_level(1){
+RequestManager::RequestManager():debug_level(1)
+        ,m_pSocketUtil(nullptr)
+        ,m_nSocketConnectNum(0)
+        ,m_pl(nullptr){
     delegates[0]=LUA_REFNIL;
 }
 
 RequestManager::~RequestManager(){
 }
 
-static RequestManager *s_SharedRequestManager = NULL;
+static RequestManager *s_getInstance = NULL;
 
-RequestManager* RequestManager::sharedRequestManager()
+RequestManager* RequestManager::getInstance()
 {
-    if (!s_SharedRequestManager){
-        s_SharedRequestManager = new RequestManager();
-        s_SharedRequestManager->init();
+    if (!s_getInstance){
+        s_getInstance = new CustomRequest();
     }
     
-    return s_SharedRequestManager;
+    return s_getInstance;
 }
 int RequestManager::dispatcher(lua_State *l){
     return 0;
 }
 
 void RequestManager::init(){
+    m_pl = LuaEngine::getInstance()->getLuaStack()->getLuaState();
+    if(m_pl){
+        ScriptEngineManager::getInstance()->setScriptEngine(LuaEngine::getInstance());
+        lua_auto_requestmanager(m_pl);
+        lua_auto_util(m_pl);
+    }
     socketInitAndConnectServer();
 }
 int RequestManager::delegate(){
@@ -163,37 +186,39 @@ void RequestManager::sendRequestWithParam(const char*type, Dictionary* param){
 }
 
 void RequestManager::sendRequestWithParam(const char* type, Dictionary* param,int userData){
-    lua_State *L = LuaEngine::getInstance()->getLuaStack()->getLuaState();
-    CHECK_STACK(L,a)
-    lua_getglobal(L, "RequestManager");
-    if (!lua_istable(L, -1)) {
-        lua_pop(L, 1);
-    }else{
-        lua_pushstring(L, "obtainHttpUrl");
-        lua_gettable(L, -2);
-        if (lua_isfunction(L, -1)) {
-            lua_pushvalue(L, -2);
-            lua_pushstring(L, type);
-            object2lua(L, param);
-            int code = lua_pcall(L, 3, 1, 0);
-            if (lua_type(L, -1)==LUA_TSTRING) {
-                if (code) {
-                    log(1, "obtain http url error:%s",lua_tostring(L, -1));
-                    lua_pop(L, 2);
+    if(m_pl){
+        lua_State *L = m_pl;
+        CHECK_STACK(L,a)
+        lua_getglobal(L, "RequestManager");
+        if (!lua_istable(L, -1)) {
+            lua_pop(L, 1);
+        }else{
+            lua_pushstring(L, "obtainHttpUrl");
+            lua_gettable(L, -2);
+            if (lua_isfunction(L, -1)) {
+                lua_pushvalue(L, -2);
+                lua_pushstring(L, type);
+                object2lua(L, param);
+                int code = lua_pcall(L, 3, 1, 0);
+                if (lua_type(L, -1)==LUA_TSTRING) {
+                    if (code) {
+                        log(1, "obtain http url error:%s",lua_tostring(L, -1));
+                        lua_pop(L, 2);
+                    }else{
+                        const char* tmp = lua_tostring(L, -1);
+                        lua_pop(L, 2);
+                        this->sendRequestWithUrl(type,tmp,userData);
+                        return;
+                    }
                 }else{
-                    const char* tmp = lua_tostring(L, -1);
                     lua_pop(L, 2);
-                    this->sendRequestWithUrl(type,tmp,userData);
-                    return;
                 }
             }else{
                 lua_pop(L, 2);
             }
-        }else{
-            lua_pop(L, 2);
         }
+        CHECK_STACK_END(L,a, "obtainHttpUrl")
     }
-    CHECK_STACK_END(L,a, "obtainHttpUrl")
     static char url[128]={0};
     obtainHttpUrl(type, param, url);
     this->sendRequestWithUrl(type,url,userData);
@@ -220,7 +245,6 @@ void RequestManager::sendMessage(const char *msg){
 void RequestManager::httpRequestDidCompleted(Object *sender, network::HttpResponse *data){
     HttpResponse *response = data;
     HttpRequest *request = response->getHttpRequest();
-    lua_State *L = LuaEngine::getInstance()->getLuaStack()->getLuaState();
     BLOCK()
     const char *type = request->getTag();
     if (!response || !strlen(type)){
@@ -269,28 +293,44 @@ void RequestManager::httpRequestDidCompleted(Object *sender, network::HttpRespon
     //return 0 means find matched method in lua
     //return 1 means not find matched method in lua,and push default result into the stack
     //negative number reserved for data format error
-    if(finishRequestForLua(L,type,result,(int)request->getUserData())>0){
+    if(m_pl && finishRequestForLua(m_pl,type,result,(int)request->getUserData())>0){
         //call default disposal method
-        dispatchRequestDidFinish(type,luaL_ref(L,LUA_REGISTRYINDEX));//OK REF
+        dispatchRequestDidFinish(type,luaL_ref(m_pl,LUA_REGISTRYINDEX));//OK REF
     }
     BLOCK_END()
-    if (((int)request->getUserData())!=LUA_REFNIL) {
-        luaL_unref(L, LUA_REGISTRYINDEX, (int)request->getUserData());
+    if (m_pl && ((int)request->getUserData())!=LUA_REFNIL) {
+        luaL_unref(m_pl, LUA_REGISTRYINDEX, (int)request->getUserData());
     }
 }
 
+
+
 void RequestManager::addDelegate(){
-    lua_State*l = LuaEngine::getInstance()->getLuaStack()->getLuaState();
-    addElement(l,delegates);
+    if (!m_pl) {
+        return;
+    }
+    addElement(m_pl,delegates);
 }
 
 void RequestManager::removeDelegate(){
-    lua_State*l = LuaEngine::getInstance()->getLuaStack()->getLuaState();
-    removeElement(l,delegates);
+    if (!m_pl) {
+        return;
+    }
+    removeElement(m_pl,delegates);
 }
-
+void RequestManager::dispatchRequestDidFinish(const char *type, cocos2d::Dictionary *result){
+    if (!m_pl) {
+        return;
+    }
+    object2lua(m_pl,result);
+    dispatchRequestDidFinish(type,luaL_ref(m_pl,LUA_REGISTRYINDEX));
+}
 void RequestManager::dispatchRequestDidFinish(const char* type, int resultRef){
-    lua_State *L = LuaEngine::getInstance()->getLuaStack()->getLuaState();
+    BLOCK()
+    if (!m_pl) {
+        LEAVE()
+    }
+    lua_State *L = m_pl;
     PUSH_STACK(L)
     DISPATCHER(L,*delegates)
     
@@ -310,11 +350,17 @@ void RequestManager::dispatchRequestDidFinish(const char* type, int resultRef){
             
     DISPATCHER_(L)
     POP_STACK(L)
-    luaL_unref(LuaEngine::getInstance()->getLuaStack()->getLuaState(), LUA_REGISTRYINDEX,resultRef);
+    BLOCK_END()
+    if (m_pl) {
+        luaL_unref(m_pl, LUA_REGISTRYINDEX,resultRef);
+    }
 }
 
 void RequestManager::dispatchRequestDidFail(const char*type,const char*message){
-    lua_State *L = LuaEngine::getInstance()->getLuaStack()->getLuaState();
+    if (!m_pl) {
+        return;
+    }
+    lua_State *L = m_pl;
     DISPATCHER(L,*delegates)
     
     lua_pushstring(L, "requestDidFailWithMessage");
@@ -353,14 +399,13 @@ void RequestManager::socketReceiveFromServer(Object*data){
         //return true means c++ will handle all things,else lua will handle ones
         return;
     }
-    lua_State *L = LuaEngine::getInstance()->getLuaStack()->getLuaState();
     //return 0 means find receiveSokectMessage method in lua
     //return 1 means not find receiveSokectMessage method in lua,and push default result into the stack
     //negative number reserved for data format error
-    if (receiveSocketForLua(L, data)>0) {
+    if (m_pl && receiveSocketForLua(m_pl, data)>0) {
         //call default disposal method
         //RTC means 实时通信
-        dispatchRequestDidFinish("RTC",luaL_ref(L,LUA_REGISTRYINDEX));//OK REF
+        dispatchRequestDidFinish("RTC",luaL_ref(m_pl,LUA_REGISTRYINDEX));//OK REF
     }
 }
 
