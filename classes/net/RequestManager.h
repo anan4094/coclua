@@ -20,6 +20,16 @@ USING_NS_CC;
 #define BLOCK_END() }while(0);
 #define LEAVE() break;
 
+
+class RequestManagerDelegate{
+public:
+    virtual void requestDidFailWithMessage(const char* type, const char* errorMessage) = 0;
+    virtual void requestDidFinishWithResult(const char* type, void* resultObject)      = 0;
+};
+
+typedef std::list< RequestManagerDelegate * > RequestDelegateList;
+typedef std::list< RequestManagerDelegate * >::iterator  RequestDelegateIter;
+
 class RequestManager : public Object{
     //pointer to index of delegate table in lua register table
 private:
@@ -28,6 +38,7 @@ private:
     int                     m_nSocketConnectNum;
     SocketUtil              *m_pSocketUtil;
     lua_State               *m_pl;
+    RequestDelegateList     m_list;
 public:
     ~RequestManager();
     RequestManager();
@@ -48,6 +59,8 @@ public:
     int  delegate();
     void addDelegate();
     void removeDelegate();
+    void addDelegate(RequestManagerDelegate *delegate);
+    void removeDelegate(RequestManagerDelegate *delegate);
     void log(int level,const char * pszFormat, ...);
 protected:
     void sendRequestWithUrl(const char* type, const char* url,int userData);

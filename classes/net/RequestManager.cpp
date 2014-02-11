@@ -318,7 +318,31 @@ void RequestManager::removeDelegate(){
     }
     removeElement(m_pl,delegates);
 }
+
+void RequestManager::addDelegate(RequestManagerDelegate *delegate_){
+    if (delegate_==nullptr) {
+        return;
+    }
+    RequestDelegateIter end = m_list.end();
+    for (RequestDelegateIter itr=m_list.begin(); itr!=end; itr++) {
+        if (*itr == delegate_) {
+            return;
+        }
+    }
+    m_list.push_back(delegate_);
+}
+
+void RequestManager::removeDelegate(RequestManagerDelegate *delegate_){
+    if (delegate_==nullptr) {
+        return;
+    }
+    m_list.remove(delegate_);
+}
 void RequestManager::dispatchRequestDidFinish(const char *type, cocos2d::Dictionary *result){
+    RequestDelegateIter end = m_list.end();
+    for (RequestDelegateIter itr=m_list.begin(); itr!=end; itr++) {
+        (*itr)->requestDidFinishWithResult(type, result);
+    }
     if (!m_pl) {
         return;
     }
@@ -357,6 +381,10 @@ void RequestManager::dispatchRequestDidFinish(const char* type, int resultRef){
 }
 
 void RequestManager::dispatchRequestDidFail(const char*type,const char*message){
+    RequestDelegateIter end = m_list.end();
+    for (RequestDelegateIter itr=m_list.begin(); itr!=end; itr++) {
+        (*itr)->requestDidFailWithMessage(type, message);
+    }
     if (!m_pl) {
         return;
     }
